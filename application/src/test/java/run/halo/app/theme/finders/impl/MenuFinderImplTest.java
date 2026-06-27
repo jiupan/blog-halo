@@ -58,6 +58,22 @@ class MenuFinderImplTest {
             """);
     }
 
+    @Test
+    void getByNameShouldMatchDisplayName() {
+        Menu footerMenu = menu("menu-actual-name", of("G"));
+        footerMenu.getSpec().setDisplayName("footer-menu");
+        MenuItem itemG = menuItem("G", null);
+        Mockito.when(client.list(eq(Menu.class), eq(null), eq(null))).thenReturn(Flux.just(footerMenu));
+        Mockito.when(client.list(eq(MenuItem.class), eq(null), any())).thenReturn(Flux.just(itemG));
+
+        MenuVo menuVo = menuFinder.getByName("footer-menu").block();
+
+        assertThat(menuVo).isNotNull();
+        assertThat(menuVo.getMetadata().getName()).isEqualTo("menu-actual-name");
+        assertThat(menuVo.getSpec().getDisplayName()).isEqualTo("footer-menu");
+        assertThat(menuVo.getMenuItems()).hasSize(1);
+    }
+
     /** Visualize a tree. */
     String visualizeTree(List<MenuVo> menuVos) {
         StringBuilder stringBuilder = new StringBuilder();

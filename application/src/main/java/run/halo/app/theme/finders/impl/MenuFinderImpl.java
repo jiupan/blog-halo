@@ -36,7 +36,8 @@ public class MenuFinderImpl implements MenuFinder {
     @Override
     public Mono<MenuVo> getByName(String name) {
         return listAsTree()
-                .filter(menu -> menu.getMetadata().getName().equals(name))
+                .filter(menu -> Objects.equals(menu.getMetadata().getName(), name)
+                        || Objects.equals(menu.getSpec().getDisplayName(), name))
                 .next()
                 .switchIfEmpty(Mono.error(() -> new NotFoundException("Menu with name " + name + " not found")));
     }
